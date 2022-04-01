@@ -1,0 +1,278 @@
+﻿
+@{
+    ViewBag.Title = "RewardPage";
+}
+@*@if (Session["UserName"] != null)
+{
+    <h2>RewardPage @Session["UserName"].ToString()</h2>
+}*@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+
+</head>
+<body>
+
+    <h2>Select Your Choice Product</h2>
+    <div>
+
+        <label for="fname">CustomerName:</label><br />
+        <input type="text" placeholder="Enter CustomerName" id="txtCustomerName" /><br />
+
+
+        <label for="fname">CustomerAddress:</label><br />
+        <input type="text" placeholder="Enter Address" id="txtCustomerAddress" /><br />
+
+
+        <label for="fname">Contact:</label><br />
+        <input type="text" placeholder="Enter ConatctNumber" id="txtContact" /><br />
+
+        <label for="fname">ProductName:</label><br />
+        <select id="txtProductName">
+        </select><br />
+
+        <label for="fname">Quantity:</label><br />
+        <input type="number" id="txtQuantity" placeholder="Quantity" /><br />
+
+        <label for="fname">ProductPoints:</label><br />
+        <input type="text" placeholder="Point Cost" id="txtProductPoints" /><br />
+
+        <label for="fname">TotalPoints:</label><br />
+        <input type="number" id="txtTotalPoints" readonly="readonly" placeholder="Quantity" /><br />
+
+        <label for="fname">RemainingPoint:</label><br />
+        <input type="text" placeholder="Remaining Point" readonly="readonly" id="txtRemainingPoint" /><br />
+
+        <div id="message"></div><br />
+        <button id="btnConfirm">Confirm</button>
+        <button type="submit" id="btnLoad">Load</button>
+        @Html.ActionLink("LogOut", "Login")
+
+        <br /><br />
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-1"></div>
+            <div class="col-sm-10">
+                <table class='table table-responsive table-bordered' id="deletecustomer">
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm-1"></div>
+        </div>
+
+    </div>
+</body>
+</html>
+<script src="~/Scripts/jquery-3.4.1.js"></script>
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script type="text/javascript">
+
+
+    $("document").ready(function () {
+        /* alert('welcome to product page');*/
+        LoadProduct();
+
+
+
+        //for selecting product dropdown backend;
+        function LoadProduct() {
+            $.ajax({
+                url: "/Product/getproduct",
+                type: "GET",
+                data: "",
+                contentType: "application/json; char=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    debugger;
+                    if (data) {
+                        debugger;
+
+                        $.each(data, function (I, item) {
+                            $('#txtProductName').append(`<option value="${item.Id}">
+                                           ${item.ProductName}
+                                      </option>`);
+                        });
+                    }
+
+
+
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            });
+
+        };
+    });
+        //for loading point of product
+    $("#txtProductName").change(function () {
+        debugger;
+            $.ajax({
+                url: " /Product/GetProductDetails",
+                type: "GET",
+                data: "id=" + $("#txtProductName").val() + "",
+                //contentType: "application/json; char=utf-8",
+                //dataType: "json",
+                success: function (data) {
+                    debugger;
+                    if (data) {
+                        debugger;
+                        $("#ProductPoints").val(data.ProductPoints);
+                    }
+
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+
+            });
+    });
+
+        //inserting data to customer and product table
+        $("#btnConfirm").click(function () {
+            var customername = $("#txtCustomerName").val();
+            var customeraddress = $("#txtCustomerAddress").val();
+            var contact = $("#txtContact").val();
+            var productname = $("#txtProductName").val();
+            var quantity = $("#txtQuantity").val();
+            var productpoints = $("#txtProductPoints").val();
+            var totalpoints = $("#txtTotalPoints").val();
+            var remaningpoint = $("#txtRemainingPoint").val();
+
+            //ajax call for customer and product
+            $.ajax({
+                url: " /Customer/AddCustomer",
+                type: "POST",
+                data: 'CustomerName=' + customername + '&CustomerAddress=' + customeraddress + '&Contact=' + contact + '&ProductName=' + productname + '&Quantity=' + quantity + '&ProductPoints=' + productpoints + '&TotalPoints=' + totalpoints + '&RemaningPoint=' + remaningpoint,
+                success: function (data) {
+                    alert("Record saved into Database")
+
+                    $("#txtCustomerName").val("");
+                    $("#txtCustomerAddress").val("");
+                    $("#txtContact").val("");
+                    $("#txtQuantity").val("");
+                    $("#txtProductName").val("");
+                    $("#txtProductPoints").val("");
+                    $("#txtTotalPoints").val("");
+                    $("#txtRemainingPoint").val("");
+
+                },
+                error: function () {
+                    alert("something went wrong");
+
+                }
+
+            });
+        })
+
+        //load customer data
+        //$("document").ready(function () {
+        //    alert('ready to load');
+        //    debugger;
+            $("#btnLoad").click(function () {
+                debugger;
+                LoadData();
+            });
+
+            function LoadData() {
+                $.ajax({
+                    type: "Get",
+                    url: "/Customer/getlist",
+                    success: function (data) {
+                        console.log(data);
+                        if (data) {
+                            debugger;
+                            var table = //" <table border=1 id='tblDetails' >" +
+                                "<table border=4"+
+                                "<thead>" +
+                                /*"<th>ID</th>" +*/
+                                "<th>CustomerName</th>" +
+                                "<th>CustomerAddress</th>" +
+                                "<th>Contact</th>" +
+                                "<th>Quantity</th>" +
+                                "<th>TotalPoints</th>" +
+                                "<th>RemaningPoint</th>" +
+                                "<th> Delete</th>" +
+                                "<th>Edit</th>" +
+                                " </thead>" +
+                                "<tbody>";
+
+
+                            $.each(data, function (I, item) {
+                                /*table += "<tr><td>" + I + "</td>";*/
+                                table += "<td>" + item.CustomerName + "</td>";
+                                table += "<td>" + item.CustomerAddress + "</td>";
+                                table += "<td>" + item.Contact + "</td>";
+                                table += "<td>" + item.Quantity + "</td>";
+                                table += "<td>" + item.TotalPoints + "</td>";
+                                table += "<td>" + item.RemainingPoints + "</td>";
+                                table += "<td> <button class='btnDelete' type='button'>Delete<button></td>";
+                                table += "<td><button class='btnEdit' type='button'>Edit<button></td></tr>";
+
+
+                            });
+                            table += "</tbody>";
+                            table += "</table>";
+
+                            $("#message").html(table);
+
+                        }
+
+                    },
+                    error: function () {
+                        alert("something went wrong");
+                    }
+
+
+                });
+            }
+
+       
+
+    //calculation part
+    $("#txtQuantity").blur(function () {
+        var quantity = parseInt($("#txtQuantity").val());
+        var ProductPoints = parseInt($("#txtProductPoints").val());
+        var OriginalPoints = 100;
+
+        var TotalPoints = quantity * ProductPoints;
+        $("#txtTotalPoints").val(TotalPoints);
+
+        var RemainingPoints = OriginalPoints - TotalPoints;
+        $("#txtRemainingPoints").val(RemainingPoints);
+
+    });
+
+    //Delete operation for customer page
+
+    $("#deletecustomer").on('click', '.btnDelete', function () {
+        // get the current row
+        var currentRow = $(this).closest("tr");
+
+        var Id = currentRow.find("td:eq(0)").text(); // get current row 1st TD value
+        console.log(Id);
+        // calling of method by using ajax
+        $.ajax({
+            type: "GET",
+            url: "/Customer/DeleteRecord",
+            data: { Id: Id },
+            success: function (data) {
+                alert("Record deleted successfully")
+            },
+            error: function () {
+                alert("something went wrong");
+
+            }
+
+        });
+    });
+
+
+</script>

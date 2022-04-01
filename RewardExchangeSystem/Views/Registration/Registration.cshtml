@@ -1,0 +1,124 @@
+﻿
+@{
+    ViewBag.Title = "Registration";
+}
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+
+</head>
+<body>
+
+    <h2>Registration</h2>
+    <div>
+
+        <label for="fname">FirstName:</label><br />
+        <input type="text" id="txtFirstName" /><br />
+
+        <label for="fname">LastName:</label><br />
+        <input type="text" id="txtLastName" /><br />
+
+        <label for="fname">Address</label><br />
+        <input type="text" id="txtAddress" /><br />
+
+        <label for="fname">DateOfBirth:</label><br />
+        <input type="date" id="txtDOB" /><br />
+
+        <label for="email">UserName:</label><br />
+        <input type="text" id="txtUserName" /><br />
+
+        <label for="fname">Password:</label><br />
+        <input type="password" id="txtpassword" /><br /><br />
+
+
+        <div id="message"></div>
+        <button type="submit" id="btnSubmit">Submit</button>
+        <br /><br />
+        <a href="/Home/Display" class="btn btn-danger">Display Records</a><br />
+
+
+        <div>
+            <h5>Already Register?</h5>
+            @Html.ActionLink("Back TO LoginPage", "Login")
+        </div>
+
+    </div>
+
+
+</body>
+</html>
+
+<script src="~/Scripts/jquery-3.4.1.js"></script>
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script type="text/javascript">
+
+    $("document").ready(function () {
+        alert('ready to load');
+
+        $("#btnSubmit").click(function () {
+            var firstname = $("#txtFirstName").val();
+            var lastname = $("#txtLastName").val();
+            var address = $("#txtAddress").val();
+            var dateofbirth = $("#txtDOB").val();
+            var username = $("#txtUserName").val();
+            var password = $("#txtpassword").val();
+
+            var table =
+                " <table border=1 >" +
+                "<thead>" +
+                "<th>FirstName</th>" +
+                "<th>LastName</th>" +
+                "<th>Address</th>" +
+                "<th>DateOfBirth</th>" +
+                "<th>UserName</th>" +
+                "<th>Password</th>" +
+                "<th> Delete</th>" +
+                "<th>Edit</th>" +
+
+
+                " </thead>" +
+                "<tbody>" +
+                " <td>" + firstname + "</td> " +
+                "<td>" + lastname + "</td > " +
+                "<td> " + address + "</td>" +
+                "<td> " + dateofbirth + "</td>" +
+                "<td> " + username + "</td>" +
+                "<td> " + password + "</td>" +
+
+
+                "</tbody>" +
+                "</table>";
+
+            $("#message").html(table);
+            alert(table);
+
+            // calling of method by using ajax
+            $.ajax({
+                type: "Post",
+                url: "/Registration/InsertRecord",
+                data: 'FirstName=' + firstname + '&LastName=' + lastname + '&Address=' + address + '&DateOfBirth=' + dateofbirth + '&UserName=' + username + '&Password=' + password,
+                success: function (data) {
+                    alert("Record saved into Database")
+
+                    $("#txtFirstName").val("");
+                    $("#txtLastName").val("");
+                    $("#txtAddress").val("");
+                    $("#txtDOB").val("");
+                    $("#txtUserName").val("");
+                    $("#txtpassword").val("");
+
+                },
+                error: function () {
+                    alert("something went wrong");
+
+                }
+
+            });
+
+        });
+
+    });
+</script>

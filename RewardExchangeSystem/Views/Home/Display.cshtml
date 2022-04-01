@@ -1,0 +1,119 @@
+﻿
+@{
+    ViewBag.Title = "Display";
+}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Display</title>
+
+
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-1"></div>
+            <div class="col-sm-10">
+                <table class='table table-responsive table-bordered' id="deletedata">
+                    <tbody >
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm-1"></div>
+        </div>
+ 
+    </div>
+</body>
+</html>
+
+<script src="~/Scripts/jquery-3.4.1.js"></script>
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/
+font-awesome/5.15.2/css/all.min.css" />
+
+
+<script type="text/javascript">
+    $("document").ready(function () {
+        //alert('ready to launch');
+         //debugger;
+        $.ajax({
+            type: "Get",
+            url: "/Registration/getlist",
+            success: function (data) {
+                console.log(data);
+                if (data) {
+                    debugger;
+                    var table = //" <table border=1 id='tblDetails' >" +
+                        "<thead>" +
+                        "<th>ID</th>" +
+                        "<th>FirstName</th>" +
+                        "<th>LastName</th>" +
+                        "<th>Address</th>" +
+                        "<th>DateOfBirth</th>" +
+                        "<th>UserName</th>" +
+                        "<th>Password</th>" +
+                        "<th> Delete</th>" +
+                        "<th>Edit</th>" +
+                        " </thead>" +
+                        "<tbody>";
+
+
+                    $.each(data, function (I, item) {
+                        table += "<tr><td>" + I + "</td>";
+                        table += "<td>" + item.FirstName + "</td>";
+                        table += "<td>" + item.LastName + "</td>";
+                        table += "<td>" + item.Address + "</td>";
+                        table += "<td>" + item.DateOfBirth + "</td>";
+                        table += "<td>" + item.UserName + "</td>";
+                        table += "<td>" + item.Password + "</td>";
+                        table += "<td> <button class='btnDelete' type='button'>Delete<button></td>";
+                        table += "<td><button class='btnEdit' type='button'>Edit<button></td></tr>";
+
+
+                    });
+                    //table += "</tbody>";
+                    //table += "</table>";
+
+                    $("#deletedata").html(table);
+
+            }
+
+            },
+            error: function () {
+                alert("something went wrong");
+            }
+               
+
+        });
+
+        // code to read selected table row cell data (values).
+        $("#deletedata").on('click', '.btnDelete', function () {
+            // get the current row
+            var currentRow = $(this).closest("tr");
+
+            var Id = currentRow.find("td:eq(0)").text(); // get current row 1st TD value
+            console.log(Id);
+            // calling of method by using ajax
+            $.ajax({
+                type: "GET",
+                url: "/Registration/DeleteRecord",
+                data: {Id: Id },
+                success: function (data) {
+                    alert("Record deleted")
+                },
+                error: function () {
+                    alert("something went wrong");
+
+                }
+
+            });
+        });
+
+    });
+ 
+
+</script>
